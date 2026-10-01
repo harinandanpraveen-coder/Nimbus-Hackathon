@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Voyago – Booking Website</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --card: #fff;
+            --text: #111827;
+            --muted: #6b7280;
+            --line: #e8eaee;
+            --accent: #e4572e;
+            --soft: #fdece6;
+            --ok: #047857;
+            --okb: #e6f6ef;
+            --bad: #b91c1c;
+            --badb: #fdecec;
+            --warn: #b45309;
+            --warnb: #fdf2e0;
+            --code: #0f172a;
+            --codet: #dbe4ff;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+
+        @media (prefers-color-scheme:dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0c0f16;
+                --card: #151a25;
+                --text: #eef1f7;
+                --muted: #98a1b3;
+                --line: #252c3b;
+                --accent: #ff7a52;
+                --soft: #3a1f17;
+                --ok: #4cd6a0;
+                --okb: #12302a;
+                --bad: #ff8a8a;
+                --badb: #38191c;
+                --warn: #f5b361;
+                --warnb: #372a14
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #0c0f16;
+            --card: #151a25;
+            --text: #eef1f7;
+            --muted: #98a1b3;
+            --line: #252c3b;
+            --accent: #ff7a52;
+            --soft: #3a1f17;
+            --ok: #4cd6a0;
+            --okb: #12302a;
+            --bad: #ff8a8a;
+            --badb: #38191c;
+            --warn: #f5b361;
+            --warnb: #372a14
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top, 0px)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font: 14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif
+        }
+
+        .top {
+            background: var(--card);
+            border-bottom: 1px solid var(--line)
+        }
+
+        .top div {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: var(--accent);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 17px
+        }
+
+        .top b {
+            font-size: 16px;
+            display: block;
+            line-height: 1.2
+        }
+
+        .top small {
+            color: var(--muted)
+        }
+
+        .top .api {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--accent);
+            background: var(--soft);
+            padding: 4px 10px;
+            border-radius: 99px
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px
+        }
+
+        nav {
+            display: inline-flex;
+            gap: 2px;
+            padding: 4px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap
+        }
+
+        nav button {
+            border: 0;
+            background: none;
+            color: var(--muted);
+            padding: 7px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 500
+        }
+
+        nav button.on {
+            background: var(--soft);
+            color: var(--accent)
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px
+        }
+
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 16px
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .stat b {
+            display: block;
+            font-size: 22px;
+            margin-top: 2px
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 16px
+        }
+
+        h2 {
+            margin: 0 0 4px;
+            font-size: 16px
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 14px 0
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            color: var(--muted);
+            gap: 3px
+        }
+
+        input,
+        select {
+            font: inherit;
+            padding: 9px 12px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent)
+        }
+
+        #q {
+            flex: 1;
+            min-width: 200px
+        }
+
+        button.go {
+            font: inherit;
+            font-weight: 500;
+            padding: 9px 16px;
+            border: 0;
+            border-radius: 9px;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            align-self: flex-end
+        }
+
+        .scroll {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 680px
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        tbody tr.c {
+            cursor: pointer
+        }
+
+        tbody tr.c:hover {
+            background: var(--bg)
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0
+        }
+
+        td:first-child {
+            font-weight: 600
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 500
+        }
+
+        .CONFIRMED,
+        .PAID {
+            color: var(--ok);
+            background: var(--okb)
+        }
+
+        .CANCELLED,
+        .FAILED {
+            color: var(--bad);
+            background: var(--badb)
+        }
+
+        .REFUND_INITIATED,
+        .PENDING {
+            color: var(--warn);
+            background: var(--warnb)
+        }
+
+        .offer {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+            flex-wrap: wrap
+        }
+
+        .offer:last-child {
+            border-bottom: 0
+        }
+
+        .offer .t {
+            flex: 1;
+            min-width: 180px
+        }
+
+        .offer b {
+            font-size: 15px
+        }
+
+        .offer .p {
+            font-size: 18px;
+            font-weight: 600
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-top: 14px
+        }
+
+        .grid div {
+            font-weight: 500
+        }
+
+        .grid span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 400
+        }
+
+        pre {
+            background: var(--code);
+            color: var(--codet);
+            padding: 14px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 13px;
+            margin: 0;
+            max-height: 380px
+        }
+
+        .tag {
+            font: 12px ui-monospace, Menlo, monospace;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            padding: 3px 8px;
+            border-radius: 6px
+        }
+
+        .hide {
+            display: none
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <div><span class="logo">🧭</span><span><b>Voyago</b><small>Travel booking website</small></span><span
+                class="api">API 1 · API 2</span></div>
+    </div>
+    <main>
+        <nav>
+            <button class="on" data-t="search">Search flights</button>
+            <button data-t="bookings">My bookings</button>
+            <button data-t="console">API Console</button>
+            <button data-t="docs">API Docs</button>
+        </nav>
+
+        <section id="search">
+            <div class="card">
+                <h2>Find flights</h2>
+                <p class="muted">Default inputs are pre-filled.</p>
+                <div class="row">
+                    <label>From<select id="from"></select></label>
+                    <label>To<select id="to"></select></label>
+                    <label>Date<input type="date" id="date" value="2026-10-10"></label>
+                    <label>Travellers<input type="number" id="pax" value="1" min="1" max="6" style="width:90px"></label>
+                    <button class="go" id="find">Search</button>
+                </div>
+                <div id="offers"></div>
+            </div>
+        </section>
+
+        <section id="bookings" class="hide">
+            <div class="stats" id="stats"></div>
+            <div class="card">
+                <h2>Booking records</h2>
+                <p class="muted">Click a row to load full details via API 2.</p>
+                <div class="row">
+                    <input id="q" placeholder="Search booking ref, customer or PNR">
+                    <select id="st">
+                        <option value="">All statuses</option>
+                        <option>CONFIRMED</option>
+                        <option>CANCELLED</option>
+                        <option>REFUND_INITIATED</option>
+                    </select>
+                    <button class="go" id="ref">Fetch via API 1</button>
+                </div>
+                <div class="scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ref</th>
+                                <th>Customer</th>
+                                <th>Airline PNR</th>
+                                <th>Route</th>
+                                <th>Amount (₹)</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tb"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card hide" id="detail">
+                <h2>Booking detail</h2>
+                <p class="muted">Response from API 2</p>
+                <div class="grid" id="dg"></div>
+            </div>
+        </section>
+
+        <section id="console" class="hide">
+            <div class="card">
+                <h2>API Console</h2>
+                <p class="muted">Call the booking APIs and inspect the JSON response.</p>
+                <div class="row">
+                    <select id="ep">
+                        <option value="list">API 1 – GET /api/booking/bookings</option>
+                        <option value="one">API 2 – GET /api/booking/bookings/{bookingRef}</option>
+                    </select>
+                    <input id="arg" placeholder="status (API 1) or booking ref (API 2)">
+                    <button class="go" id="send">Send</button>
+                </div>
+                <p class="muted" id="req" style="margin-bottom:8px"></p>
+                <pre id="out">Press Send to call an API.</pre>
+            </div>
+        </section>
+
+        <section id="docs" class="hide">
+            <div class="card">
+                <h2>API 1 – List bookings</h2>
+                <p><span class="tag">GET /api/booking/bookings?status=</span></p>
+                <p class="muted">Returns all booking records (booking ref, customer, airline PNR, route, amount, payment
+                    ref, status). Optional filter: status. Used by Fork0ff to pull booking-side records.</p>
+                <h2 style="margin-top:20px">API 2 – Booking detail</h2>
+                <p><span class="tag">GET /api/booking/bookings/{bookingRef}</span></p>
+                <p class="muted">Returns one booking with fare breakdown (base fare, taxes, convenience fee), contact
+                    details and booking time. 404 if the reference is unknown.</p>
+                <p class="muted" style="margin-top:14px">Both APIs run inside this page on sample data (no server).
+                    Sample data links to the airline site by PNR and to the payment site by payment ref, with a few
+                    intentional mismatches for reconciliation testing.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const R = [
+            ["BK-20001", "Aarav Sharma", "MR1001", "MR201", "CCU", "DEL", 5400, "PAY-90001", "CONFIRMED", "2026-10-01 10:12"],
+            ["BK-20002", "Priya Das", "MR1002", "MR305", "CCU", "BOM", 6200, "PAY-90002", "CONFIRMED", "2026-10-01 11:40"],
+            ["BK-20003", "Rohan Mehta", "MR1003", "MR118", "DEL", "BLR", 7100, "PAY-90003", "CONFIRMED", "2026-10-02 09:05"],
+            ["BK-20004", "Ananya Roy", "MR1004", "MR410", "BOM", "CCU", 5800, "PAY-90004", "CANCELLED", "2026-10-02 14:30"],
+            ["BK-20005", "Vikram Singh", "MR1005", "MR222", "BLR", "HYD", 3200, "PAY-90005", "REFUND_INITIATED", "2026-10-03 08:20"],
+            ["BK-20006", "Sneha Iyer", "MR1006", "MR201", "CCU", "DEL", 5400, "PAY-90006", "CONFIRMED", "2026-10-03 16:45"],
+            ["BK-20007", "Kabir Khan", "MR1007", "MR509", "HYD", "CCU", 5100, "PAY-90007", "CONFIRMED", "2026-10-04 12:00"],
+            ["BK-20008", "Meera Nair", "MR1008", "MR118", "DEL", "BLR", 7100, "PAY-90008", "CONFIRMED", "2026-10-04 19:10"],
+            ["BK-20009", "Rahul Verma", "MR1009", "MR201", "CCU", "DEL", 5400, "PAY-90009", "CONFIRMED", "2026-10-05 07:55"]
+        ].map(r => ({ bookingRef: r[0], customer: r[1], airlinePnr: r[2], flightNo: r[3], origin: r[4], destination: r[5], amount: r[6], paymentRef: r[7], status: r[8], bookedAt: r[9], currency: "INR", email: r[1].split(" ")[0].toLowerCase() + "@example.com" }));
+        const F = [["MR201", "CCU", "DEL", "06:15", "08:35", 5400], ["MR214", "CCU", "DEL", "13:20", "15:40", 5900], ["MR305", "CCU", "BOM", "09:40", "12:10", 6200], ["MR118", "DEL", "BLR", "18:05", "20:50", 7100], ["MR410", "BOM", "CCU", "13:25", "15:55", 5800], ["MR222", "BLR", "HYD", "07:50", "09:00", 3200], ["MR509", "HYD", "CCU", "21:10", "23:00", 4900]];
+        const CITIES = ["CCU", "DEL", "BOM", "BLR", "HYD"];
+
+        // Mock server: API 1 and API 2
+        function api(path) {
+            return new Promise(res => setTimeout(() => {
+                const u = new URL(path, "http://x"); const p = u.pathname;
+                if (p === "/api/booking/bookings") { // API 1
+                    const s = u.searchParams.get("status");
+                    const d = R.filter(b => !s || b.status === s).map(({ bookingRef, customer, airlinePnr, flightNo, origin, destination, amount, paymentRef, status }) => ({ bookingRef, customer, airlinePnr, flightNo, origin, destination, amount, paymentRef, status }));
+                    return res({ status: 200, body: { api: "API 1", count: d.length, bookings: d } });
+                }
+                const m = p.match(/^\/api\/booking\/bookings\/([^/]+)$/); // API 2
+                if (m) {
+                    const b = R.find(x => x.bookingRef === m[1].toUpperCase());
+                    if (!b) return res({ status: 404, body: { api: "API 2", error: "Booking not found" } });
+                    const fee = b.amount > 5000 ? 299 : 199, tax = Math.round((b.amount - fee) * 0.18), base = b.amount - fee - tax;
+                    return res({ status: 200, body: { api: "API 2", ...b, fareBreakdown: { baseFare: base, taxes: tax, convenienceFee: fee, total: b.amount } } });
+                }
+                res({ status: 404, body: { error: "Unknown endpoint" } });
+            }, 150));
+        }
+
+        const $ = s => document.querySelector(s);
+        $("#from").innerHTML = CITIES.map(c => `<option ${c == "CCU" ? "selected" : ""}>${c}</option>`).join("");
+        $("#to").innerHTML = CITIES.map(c => `<option ${c == "DEL" ? "selected" : ""}>${c}</option>`).join("");
+        function offers() {
+            const f = $("#from").value, t = $("#to").value, n = +$("#pax").value || 1;
+            const l = F.filter(x => x[1] === f && x[2] === t);
+            $("#offers").innerHTML = l.length ? l.map(x => `<div class="offer"><div class="t"><b>${x[0]} · ${x[1]} → ${x[2]}</b><div class="muted">${x[3]} – ${x[4]} · ${$("#date").value}</div></div><div class="p">₹${(x[5] * n).toLocaleString("en-IN")}</div><button class="go" onclick="alert('Demo only: booking is created via the bookings data.')">Book</button></div>`).join("") : `<p class="muted">No flights on this route in the sample data.</p>`;
+        }
+        $("#find").onclick = offers;
+        function rows(list) { $("#tb").innerHTML = list.map(t => `<tr class="c" data-p="${t.bookingRef}"><td>${t.bookingRef}</td><td>${t.customer}</td><td>${t.airlinePnr}</td><td>${t.origin} → ${t.destination}</td><td>${t.amount.toLocaleString("en-IN")}</td><td>${t.paymentRef}</td><td><span class="pill ${t.status}">${t.status.replace("_", " ")}</span></td></tr>`).join("") || `<tr><td colspan="7">No records</td></tr>`; }
+        async function load() {
+            const r = await api("/api/booking/bookings" + ($("#st").value ? "?status=" + $("#st").value : ""));
+            const q = $("#q").value.toLowerCase();
+            rows(r.body.bookings.filter(t => !q || Object.values(t).join(" ").toLowerCase().includes(q)));
+        }
+        $("#tb").onclick = async e => {
+            const tr = e.target.closest("tr"); if (!tr || !tr.dataset.p) return;
+            const r = (await api("/api/booking/bookings/" + tr.dataset.p)).body;
+            const f = [["Booking ref", r.bookingRef], ["Customer", r.customer], ["Email", r.email], ["Airline PNR", r.airlinePnr], ["Flight", r.flightNo], ["Route", r.origin + " → " + r.destination], ["Booked at", r.bookedAt], ["Base fare", "₹" + r.fareBreakdown.baseFare], ["Taxes", "₹" + r.fareBreakdown.taxes], ["Convenience fee", "₹" + r.fareBreakdown.convenienceFee], ["Total", "₹" + r.fareBreakdown.total], ["Payment ref", r.paymentRef], ["Status", r.status]];
+            $("#dg").innerHTML = f.map(x => `<div><span>${x[0]}</span>${x[1]}</div>`).join("");
+            $("#detail").classList.remove("hide"); $("#detail").scrollIntoView({ behavior: "smooth" });
+        };
+        $("#ref").onclick = load; $("#st").onchange = load; $("#q").oninput = load;
+        document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+            document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+            ["search", "bookings", "console", "docs"].forEach(id => $("#" + id).classList.toggle("hide", id !== b.dataset.t));
+        });
+        $("#send").onclick = async () => {
+            const a = $("#arg").value.trim();
+            const path = $("#ep").value === "list" ? "/api/booking/bookings" + (a ? "?status=" + encodeURIComponent(a.toUpperCase()) : "") : "/api/booking/bookings/" + encodeURIComponent(a || "BK-20001");
+            $("#req").textContent = "GET " + path; const r = await api(path);
+            $("#out").textContent = "HTTP " + r.status + "\n" + JSON.stringify(r.body, null, 2);
+        };
+        function stats() {
+            const c = x => R.filter(t => x.includes(t.status)).length;
+            const v = R.filter(t => t.status === "CONFIRMED").reduce((a, t) => a + t.amount, 0);
+            $("#stats").innerHTML = [["Total bookings", R.length], ["Confirmed", c(["CONFIRMED"])], ["Cancelled / refund", c(["CANCELLED", "REFUND_INITIATED"])], ["Confirmed value", "₹" + v.toLocaleString("en-IN")]].map(x => `<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+        }
+        offers(); stats(); load();
+    </script>
+</body>
+
+</html>
