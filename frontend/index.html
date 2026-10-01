@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fork0ff — Cross-Organizational Flight Refund Resolution Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #111827;
+            --surface-elevated: #1a2234;
+            --surface-hover: #222d42;
+            --border: #26334d;
+            --border-light: #374663;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --accent: #8b5cf6;
+            --cyan: #06b6d4;
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --warning: #f59e0b;
+            --warning-glow: rgba(245, 158, 11, 0.2);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            line-height: 1.5;
+            background-image: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+        }
+
+        /* Top Organization Navigation Bar */
+        .org-nav {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .org-nav-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: var(--radius-sm);
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .brand-info h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-info span {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .portals-switcher {
+            display: flex;
+            align-items: center;
+            background: var(--surface-elevated);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            gap: 4px;
+        }
+
+        .portal-link {
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .portal-link:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .portal-link.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 8px var(--primary-glow);
+        }
+
+        .live-status-pill {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 99px;
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 28px 24px;
+        }
+
+        /* Banner Hero */
+        .hero {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.05));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .hero h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 650px;
+        }
+
+        .system-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sys-badge {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sys-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .sys-badge.offline .dot {
+            background: var(--danger);
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background: var(--surface-elevated);
+            color: var(--text);
+            border-color: var(--border-light);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        /* Content Sections */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards and Inputs */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Form elements */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        input, select, textarea {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            padding: 10px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--surface-elevated);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-light);
+            box-shadow: none;
+        }
+
+        /* Scenario Presets Grid */
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .scenario-card {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scenario-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .scenario-card.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), var(--surface-elevated));
+        }
+
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .scenario-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            background: var(--primary-glow);
+            color: var(--primary);
+        }
+
+        .scenario-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .scenario-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .scenario-meta {
+            font-size: 11px;
+            color: var(--cyan);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Live Booking Selector */
+        .live-select-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .live-select-bar select {
+            flex: 1;
+            min-width: 250px;
+            font-size: 14px;
+            padding: 11px 16px;
+        }
+
+        /* Custom Studio Panels */
+        .custom-org-panel {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .custom-org-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Result View */
+        .result-container {
+            margin-top: 24px;
+        }
+
+        .result-header {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .case-id-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+        }
+
+        .status-pill {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-COMPLETED {
+            background: var(--success-glow);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .status-BLOCKED {
+            background: var(--danger-glow);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .status-PROCESSING_NORMALLY {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--cyan);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+        }
+
+        .status-UNRESOLVED {
+            background: var(--warning-glow);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        /* Result Grid KPI */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: var(--surface-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 18px;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .kpi-val {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .kpi-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        /* Blocker Alert Box */
+        .blocker-alert {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .blocker-alert.safe {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .blocker-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .blocker-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 4px;
+        }
+
+        .blocker-alert.safe .blocker-content h4 {
+            color: var(--success);
+        }
+
+        .blocker-content p {
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .blocker-evidence {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 14px 0 14px 20px;
+            border-left: 2px solid var(--border-light);
+            margin: 16px 0 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .timeline-item {
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -27px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .timeline-org {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .timeline-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .timeline-body {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* JSON Output Viewer */
+        .json-viewer {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #cbd5e1;
+            max-height: 420px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Table */
+        .evidence-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+        .evidence-table th, .evidence-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .evidence-table th {
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .evidence-table tr:hover {
+            background: var(--surface-elevated);
+        }
+
+        .copy-btn {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Organization Switcher Navigation Bar -->
+    <header class="org-nav">
+        <div class="org-nav-inner">
+            <a href="index.html" class="brand-badge">
+                <div class="brand-logo">⚡</div>
+                <div class="brand-info">
+                    <h1>Fork0ff Resolution</h1>
+                    <span>Cross-Org Flight Refund Reconciliation</span>
+                </div>
+            </a>
+
+            <div class="portals-switcher">
+                <a href="index.html" class="portal-link active">⚡ Fork0ff Portal</a>
+                <a href="booking.html" class="portal-link">🧭 Voyago (Booking)</a>
+                <a href="airline.html" class="portal-link">✈️ Meridian Air</a>
+                <a href="payment.html" class="portal-link">💳 Zenpay (Payments)</a>
+            </div>
+
+            <div class="live-status-pill" id="livePill">
+                <div class="status-dot"></div>
+                <span id="liveStatusText">Microservices Active (Ports 8000–8003)</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div>
+                <h2>Cross-Organizational Refund Resolution Engine</h2>
+                <p>Connects independent evidence records across Booking Platforms, Airlines, Payment Gateways, and Issuing Banks into an explainable, unified case with deterministic state tracking and AI decision governance.</p>
+            </div>
+            <div class="system-pills">
+                <div class="sys-badge" id="badgeBooking"><span class="dot"></span>Booking API (:8001)</div>
+                <div class="sys-badge" id="badgeAirline"><span class="dot"></span>Airline API (:8002)</div>
+                <div class="sys-badge" id="badgePayment"><span class="dot"></span>Payment API (:8003)</div>
+                <div class="sys-badge"><span class="dot"></span>Hub API (:8000)</div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="tab-live" id="btnTabLive">
+                <span>🌐</span> Live Microservice Pipeline
+            </button>
+            <button class="tab-btn" data-tab="tab-scenarios" id="btnTabScenarios">
+                <span>🧪</span> Preset Test Cases (A / B / C / D)
+            </button>
+            <button class="tab-btn" data-tab="tab-custom" id="btnTabCustom">
+                <span>🛠️</span> Interactive Evidence Studio
+            </button>
+        </nav>
+
+        <!-- TAB 1: Live Microservice Pipeline -->
+        <section id="tab-live" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title"><span>📡</span> Execute Live Cross-Service Reconciliation</div>
+                        <div class="card-subtitle">Pulls live records from Voyago (8001), Meridian Air (8002), and Zenpay (8003) and runs Person 1 Adapters + Person 2 Pipeline + Person 3 Orchestrator.</div>
+                    </div>
+                </div>
+
+                <div class="live-select-bar">
+                    <select id="liveBookingSelect">
+                        <option value="BK-20006">BK-20006 — Sneha Iyer (FAILED payment -> BLOCKED)</option>
+                        <option value="BK-20001">BK-20001 — Aarav Sharma (CONFIRMED across all systems)</option>
+                        <option value="BK-20002">BK-20002 — Priya Das (Booking + Airline + Payment matched)</option>
+                        <option value="BK-20003">BK-20003 — Rohan Mehta (CONFIRMED)</option>
+                        <option value="BK-20004">BK-20004 — Ananya Roy (CANCELLED on Booking & Airline)</option>
+                        <option value="BK-20005">BK-20005 — Vikram Singh (REFUNDED on Airline & Zenpay)</option>
+                        <option value="BK-20007">BK-20007 — Kabir Khan (CONFIRMED)</option>
+                        <option value="BK-20008">BK-20008 — Meera Nair (CONFIRMED)</option>
+                        <option value="BK-20009">BK-20009 — Rahul Verma (CONFIRMED)</option>
+                    </select>
+
+                    <button class="btn" id="btnRunLive">
+                        <span>⚡</span> Run Live Resolution Pipeline
+                    </button>
+                </div>
+                <p class="card-subtitle">Tip: You can add new bookings on <a href="booking.html" style="color:var(--cyan);text-decoration:underline;">Voyago</a>, new tickets on <a href="airline.html" style="color:var(--cyan);text-decoration:underline;">Meridian Air</a>, or new transactions on <a href="payment.html" style="color:var(--cyan);text-decoration:underline;">Zenpay</a> and they will reconcile here in real-time!</p>
+            </div>
+        </section>
+
+        <!-- TAB 2: Preset Scenarios (Matching core/test_cases.py) -->
+        <section id="tab-scenarios" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title"><span>🧪</span> Automated Test Scenarios (from core/test_cases.py)</div>
+                        <div class="card-subtitle">Click any scenario to pass test case records through the exact reconciliation pipeline and observe outputs.</div>
+                    </div>
+                </div>
+
+                <div class="scenarios-grid">
+                    <div class="scenario-card" data-scenario="A" id="cardScenA">
+                        <div class="scenario-header">
+                            <span class="scenario-badge">TEST CASE A</span>
+                            <span style="color:var(--success);font-size:12px;font-weight:600;">COMPLETED</span>
+                        </div>
+                        <h3>Completed Refund</h3>
+                        <p>Booking requested, Airline authorized, Payment completed, Bank credited. Full end-to-end trace with 0 blockers.</p>
+                        <div class="scenario-meta">John Doe · BK123 · ₹250 · 4/4 Records</div>
+                    </div>
+
+                    <div class="scenario-card" data-scenario="B" id="cardScenB">
+                        <div class="scenario-header">
+                            <span class="scenario-badge">TEST CASE B</span>
+                            <span style="color:var(--danger);font-size:12px;font-weight:600;">BLOCKED</span>
+                        </div>
+                        <h3>SLA Exceeded / Blocked</h3>
+                        <p>Payment initiated 3 days after authorization (exceeds SLA window). Case gets marked BLOCKED with responsible next owner.</p>
+                        <div class="scenario-meta">Jane Smith · BK456 · ₹180 · SLA Breached</div>
+                    </div>
+
+                    <div class="scenario-card" data-scenario="C" id="cardScenC">
+                        <div class="scenario-header">
+                            <span class="scenario-badge">TEST CASE C</span>
+                            <span style="color:var(--cyan);font-size:12px;font-weight:600;">PROCESSING</span>
+                        </div>
+                        <h3>Normal Processing within SLA</h3>
+                        <p>Airline authorized and Payment processing within 15 minutes. Normal lifecycle progression with no blockers.</p>
+                        <div class="scenario-meta">Alice N · BK789 · ₹300 · Within Window</div>
+                    </div>
+
+                    <div class="scenario-card" data-scenario="D" id="cardScenD">
+                        <div class="scenario-header">
+                            <span class="scenario-badge">TEST CASE D</span>
+                            <span style="color:var(--warning);font-size:12px;font-weight:600;">UNRESOLVED</span>
+                        </div>
+                        <h3>Unresolved Match</h3>
+                        <p>Conflicting evidence records (mismatched passenger Bob Wright vs Charlie Brown and different amounts). Flags human review.</p>
+                        <div class="scenario-meta">Mismatched Records · Review Flagged</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: Interactive Evidence Studio -->
+        <section id="tab-custom" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title"><span>🛠️</span> Interactive Multi-Party Evidence Builder</div>
+                        <div class="card-subtitle">Input custom records across Booking, Airline, Payment, and Bank. Values are fed directly into create_refund_case() and CaseOrchestrator().</div>
+                    </div>
+                    <button class="btn btn-secondary" id="btnFillSample"><span>🪄</span> Fill Realistic Sample</button>
+                </div>
+
+                <!-- 1. Booking Platform Input -->
+                <div class="custom-org-panel">
+                    <div class="custom-org-title"><span>🧭</span> 1. Booking Platform Evidence</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Record ID</label>
+                            <input id="c_b_id" value="BK-CUSTOM-01">
+                        </div>
+                        <div class="form-group">
+                            <label>Booking Reference</label>
+                            <input id="c_b_ref" value="BK-9990">
+                        </div>
+                        <div class="form-group">
+                            <label>Passenger Name</label>
+                            <input id="c_b_pax" value="Karan Kapoor">
+                        </div>
+                        <div class="form-group">
+                            <label>Flight No</label>
+                            <input id="c_b_flight" value="AI-302">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="c_b_amt" value="6500">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="c_b_status">
+                                <option value="REFUND_REQUESTED" selected>REFUND_REQUESTED</option>
+                                <option value="CONFIRMED">CONFIRMED</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Airline Input -->
+                <div class="custom-org-panel">
+                    <div class="custom-org-title"><span>✈️</span> 2. Airline Evidence (Meridian Air)</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>PNR</label>
+                            <input id="c_a_pnr" value="MR9990">
+                        </div>
+                        <div class="form-group">
+                            <label>Passenger Name</label>
+                            <input id="c_a_pax" value="Karan Kapoor">
+                        </div>
+                        <div class="form-group">
+                            <label>Flight No</label>
+                            <input id="c_a_flight" value="AI-302">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="c_a_amt" value="6500">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="c_a_status">
+                                <option value="REFUND_AUTHORIZED" selected>REFUND_AUTHORIZED</option>
+                                <option value="CONFIRMED">CONFIRMED</option>
+                                <option value="REFUNDED">REFUNDED</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Payment Provider Input -->
+                <div class="custom-org-panel">
+                    <div class="custom-org-title"><span>💳</span> 3. Payment Gateway Evidence (Zenpay)</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Ref</label>
+                            <input id="c_p_ref" value="PAY-8880">
+                        </div>
+                        <div class="form-group">
+                            <label>Payer Name</label>
+                            <input id="c_p_payer" value="Karan Kapoor">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="c_p_amt" value="6500">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="c_p_status">
+                                <option value="PROCESSING" selected>PROCESSING</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="REFUND_INITIATED">REFUND_INITIATED</option>
+                                <option value="FAILED">FAILED</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Delay Simulation</label>
+                            <select id="c_p_delay">
+                                <option value="0">Normal (Within 15 mins)</option>
+                                <option value="3">3 Days Delay (Triggers SLA Blocker)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" id="btnRunCustom" style="width:100%;padding:14px;font-size:15px;">
+                    <span>⚡</span> Reconcile Custom Case via Backend Pipeline
+                </button>
+            </div>
+        </section>
+
+        <!-- OUTPUT RESULTS SECTION -->
+        <section id="resultsSection" class="result-container" style="display:none;">
+            <!-- Header bar with Case ID and State -->
+            <div class="result-header">
+                <div>
+                    <span class="card-subtitle">APPLICATION READY CASE</span>
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+                        <span class="case-id-tag" id="resCaseId">CASE-XXXXXXXX</span>
+                        <span style="font-size:12px;color:var(--text-muted);" id="resTimestamp">Just now</span>
+                    </div>
+                </div>
+                <div id="resStateBadge" class="status-pill status-COMPLETED">
+                    COMPLETED
+                </div>
+            </div>
+
+            <!-- Blocker Banner -->
+            <div id="resBlockerBanner" class="blocker-alert" style="display:none;">
+                <div class="blocker-icon" id="resBlockerIcon">⚠️</div>
+                <div class="blocker-content">
+                    <h4 id="resBlockerTitle">BLOCKER DETECTED AT PAYMENT PROVIDER</h4>
+                    <p id="resBlockerReason">Payment transaction recorded explicit failure status: FAILED.</p>
+                    <div class="blocker-evidence" id="resBlockerEvidence"></div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Reconciliation Confidence</div>
+                    <div class="kpi-val" id="resRecScore">92%</div>
+                    <div class="kpi-desc" id="resRecReason">Multi-attribute match on passenger, amount, and flight date.</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-label">Next Responsible Owner</div>
+                    <div class="kpi-val" id="resNextOwner" style="color:var(--cyan);">Payment Operations</div>
+                    <div class="kpi-desc" id="resNextAction">Retry payment settlement or notify acquiring bank.</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-label">Jev Decision Governance</div>
+                    <div class="kpi-val">
+                        <span id="resJevPriority" style="color:var(--danger);font-size:14px;padding:3px 10px;border-radius:99px;background:rgba(239,68,68,0.15);">HIGH</span>
+                        <span style="font-size:13px;color:var(--text-muted);" id="resJevScore">Confidence: 0.31</span>
+                    </div>
+                    <div class="kpi-desc" id="resJevAction">Escalate to Payment Operations: Explicit failure recorded.</div>
+                </div>
+            </div>
+
+            <!-- Jev Assessment Full Summary Card -->
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-title" style="margin-bottom:8px;"><span>🧠</span> Jev Decision Assessment & Explanation</div>
+                <p id="resJevSummary" style="font-size:14px;color:var(--text);margin-bottom:8px;line-height:1.6;"></p>
+                <div id="resJevUncertainty" style="display:none;font-size:12px;color:var(--warning);padding:8px 12px;background:var(--warning-glow);border-radius:6px;"></div>
+            </div>
+
+            <!-- Multi-Party Timeline Card -->
+            <div class="card">
+                <div class="card-title"><span>⏳</span> Cross-Organizational Event Timeline</div>
+                <div class="card-subtitle">Chronological progression of lifecycle events across all independent systems.</div>
+                <div class="timeline" id="resTimeline"></div>
+            </div>
+
+            <!-- Evidence Comparison Table -->
+            <div class="card">
+                <div class="card-title"><span>📊</span> Source Evidence Matrix</div>
+                <div class="card-subtitle">Side-by-side reconciled evidence attributes extracted from each source organization.</div>
+                <div style="overflow-x:auto;">
+                    <table class="evidence-table">
+                        <thead>
+                            <tr>
+                                <th>Source Organization</th>
+                                <th>Source ID</th>
+                                <th>Status</th>
+                                <th>Passenger</th>
+                                <th>Booking Ref</th>
+                                <th>Flight</th>
+                                <th>Amount (₹)</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resEvidenceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- JSON Tree Inspector -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><span>📦</span> Full ApplicationReadyCase JSON (Person 3 Contract)</div>
+                    <button class="copy-btn" id="btnCopyJson">📋 Copy JSON</button>
+                </div>
+                <pre class="json-viewer" id="resJsonView"></pre>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        // Tab Switching
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+                btn.classList.add("active");
+                document.getElementById(btn.dataset.tab).classList.add("active");
+            });
+        });
+
+        // Scenario Preset Clicking
+        document.querySelectorAll(".scenario-card").forEach(card => {
+            card.addEventListener("click", () => {
+                document.querySelectorAll(".scenario-card").forEach(c => c.classList.remove("active"));
+                card.classList.add("active");
+                runScenario(card.dataset.scenario);
+            });
+        });
+
+        // Check query param for bookingRef (e.g. redirected from booking.html, airline.html, payment.html)
+        window.addEventListener("DOMContentLoaded", () => {
+            checkMicroservicesStatus();
+            const params = new URLSearchParams(window.location.search);
+            const bref = params.get("bookingRef");
+            if (bref) {
+                const sel = document.getElementById("liveBookingSelect");
+                let found = false;
+                for (let i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].value === bref) {
+                        sel.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    const opt = new Option(`${bref} (Custom / Newly Added)`, bref, true, true);
+                    sel.add(opt);
+                }
+                runLivePipeline(bref);
+            } else {
+                // Run default live case BK-20006 for immediate demonstration
+                runLivePipeline("BK-20006");
+            }
+        });
+
+        async function checkMicroservicesStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/api/status`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.available_bookings && data.available_bookings.length) {
+                        // populate select if new bookings exist
+                        const sel = document.getElementById("liveBookingSelect");
+                        data.available_bookings.forEach(b => {
+                            let exists = false;
+                            for (let i = 0; i < sel.options.length; i++) {
+                                if (sel.options[i].value === b) exists = true;
+                            }
+                            if (!exists) {
+                                sel.add(new Option(`${b} (Live Record)`, b));
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn("Hub API status check:", e);
+            }
+        }
+
+        // Run Live Pipeline
+        document.getElementById("btnRunLive").addEventListener("click", () => {
+            const ref = document.getElementById("liveBookingSelect").value;
+            runLivePipeline(ref);
+        });
+
+        async function runLivePipeline(bookingRef) {
+            showLoading();
+            try {
+                const res = await fetch(`${API_BASE}/api/reconcile/live`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bookingRef: bookingRef })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || "Failed to execute pipeline");
+                }
+                const caseData = await res.json();
+                renderResults(caseData);
+            } catch (err) {
+                alert("Error running live pipeline: " + err.message);
+            }
+        }
+
+        // Run Scenario Preset
+        async function runScenario(scenarioKey) {
+            showLoading();
+            try {
+                const res = await fetch(`${API_BASE}/api/reconcile/scenario`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ scenario: scenarioKey })
+                });
+                if (!res.ok) throw new Error("Scenario execution failed");
+                const data = await res.json();
+                renderResults(data.case);
+            } catch (err) {
+                alert("Error running scenario: " + err.message);
+            }
+        }
+
+        // Run Custom Case
+        document.getElementById("btnRunCustom").addEventListener("click", async () => {
+            showLoading();
+            const delayDays = parseInt(document.getElementById("c_p_delay").value) || 0;
+            const t0 = new Date("2026-10-01T10:00:00");
+            const tPayment = new Date(t0.getTime() + (delayDays * 86400000) + (15 * 60000));
+
+            const records = [
+                {
+                    source_organization: "Booking Platform",
+                    source_record_id: document.getElementById("c_b_id").value,
+                    booking_ref: document.getElementById("c_b_ref").value,
+                    passenger: document.getElementById("c_b_pax").value,
+                    flight: document.getElementById("c_b_flight").value,
+                    refund_amount: parseFloat(document.getElementById("c_b_amt").value) || 0,
+                    source_status: document.getElementById("c_b_status").value,
+                    timestamp: t0.toISOString()
+                },
+                {
+                    source_organization: "Airline",
+                    source_record_id: document.getElementById("c_a_pnr").value,
+                    booking_ref: document.getElementById("c_b_ref").value,
+                    passenger: document.getElementById("c_a_pax").value,
+                    flight: document.getElementById("c_a_flight").value,
+                    refund_amount: parseFloat(document.getElementById("c_a_amt").value) || 0,
+                    source_status: document.getElementById("c_a_status").value,
+                    timestamp: new Date(t0.getTime() + 1800000).toISOString()
+                },
+                {
+                    source_organization: "Payment Provider",
+                    source_record_id: document.getElementById("c_p_ref").value,
+                    booking_ref: document.getElementById("c_b_ref").value,
+                    passenger: document.getElementById("c_p_payer").value,
+                    refund_amount: parseFloat(document.getElementById("c_p_amt").value) || 0,
+                    source_status: document.getElementById("c_p_status").value,
+                    timestamp: tPayment.toISOString()
+                }
+            ];
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reconcile/custom`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ records: records })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || "Reconciliation failed");
+                }
+                const caseData = await res.json();
+                renderResults(caseData);
+            } catch (err) {
+                alert("Error running custom case: " + err.message);
+            }
+        });
+
+        // Fill Sample Form
+        document.getElementById("btnFillSample").addEventListener("click", () => {
+            document.getElementById("c_b_id").value = "BK-" + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById("c_b_ref").value = "BK-SAMPLE-" + Math.floor(100 + Math.random() * 900);
+            document.getElementById("c_b_pax").value = "Arun Verma";
+            document.getElementById("c_b_flight").value = "MR201";
+            document.getElementById("c_b_amt").value = "5400";
+            document.getElementById("c_b_status").value = "CANCELLED";
+
+            document.getElementById("c_a_pnr").value = "MR" + Math.floor(2000 + Math.random() * 8000);
+            document.getElementById("c_a_pax").value = "Arun Verma";
+            document.getElementById("c_a_flight").value = "MR201";
+            document.getElementById("c_a_amt").value = "5400";
+            document.getElementById("c_a_status").value = "REFUND_AUTHORIZED";
+
+            document.getElementById("c_p_ref").value = "PAY-" + Math.floor(90000 + Math.random() * 9000);
+            document.getElementById("c_p_payer").value = "Arun Verma";
+            document.getElementById("c_p_amt").value = "5400";
+            document.getElementById("c_p_status").value = "REFUND_INITIATED";
+            document.getElementById("c_p_delay").value = "3";
+        });
+
+        function showLoading() {
+            const sec = document.getElementById("resultsSection");
+            sec.style.display = "block";
+            sec.scrollIntoView({ behavior: "smooth" });
+        }
+
+        // Render Results
+        function renderResults(data) {
+            document.getElementById("resultsSection").style.display = "block";
+
+            // Metadata
+            document.getElementById("resCaseId").textContent = data.meta.case_id;
+            document.getElementById("resTimestamp").textContent = new Date(data.meta.generated_at).toLocaleString();
+
+            // Normalized State
+            const normState = data.state.normalized;
+            const badge = document.getElementById("resStateBadge");
+            badge.textContent = normState.replace("_", " ");
+            badge.className = `status-pill status-${normState}`;
+
+            // Blocker
+            const blocker = data.state.blocker || {};
+            const blockerBox = document.getElementById("resBlockerBanner");
+            if (blocker.blocked) {
+                blockerBox.style.display = "flex";
+                blockerBox.className = "blocker-alert";
+                document.getElementById("resBlockerIcon").textContent = "⚠️";
+                document.getElementById("resBlockerTitle").textContent = `BLOCKER IDENTIFIED: ${blocker.organization || "Unspecified"}`;
+                document.getElementById("resBlockerReason").textContent = blocker.reason || "Case is blocked.";
+                const evList = blocker.evidence || [];
+                document.getElementById("resBlockerEvidence").innerHTML = evList.map(e => `<span>• ${e}</span>`).join("");
+            } else {
+                blockerBox.style.display = "flex";
+                blockerBox.className = "blocker-alert safe";
+                document.getElementById("resBlockerIcon").textContent = "✅";
+                document.getElementById("resBlockerTitle").textContent = "NO BLOCKERS DETECTED";
+                document.getElementById("resBlockerReason").textContent = "All records conform to standard SLA windows and operational criteria.";
+                document.getElementById("resBlockerEvidence").innerHTML = "";
+            }
+
+            // Next Owner
+            const nextOwner = data.state.next_owner || {};
+            document.getElementById("resNextOwner").textContent = nextOwner.organization || "No Action Required";
+            document.getElementById("resNextAction").textContent = nextOwner.reason || "Process complete";
+
+            // Reconciliation Score
+            const rec = data.reconciliation || {};
+            const scorePct = rec.confidence_score != null ? Math.round(rec.confidence_score * 100) : 100;
+            document.getElementById("resRecScore").textContent = `${scorePct}% (${rec.status || "MATCHED"})`;
+            document.getElementById("resRecReason").textContent = rec.reason || "Matched attributes verified across systems.";
+
+            // Jev Decision Assessment
+            const jev = data.jev_decision_assessment || {};
+            const prioBadge = document.getElementById("resJevPriority");
+            prioBadge.textContent = jev.escalation_priority || "LOW";
+            if (jev.escalation_priority === "HIGH") {
+                prioBadge.style.color = "var(--danger)";
+                prioBadge.style.background = "rgba(239,68,68,0.15)";
+            } else if (jev.escalation_priority === "MEDIUM") {
+                prioBadge.style.color = "var(--warning)";
+                prioBadge.style.background = "rgba(245,158,11,0.15)";
+            } else {
+                prioBadge.style.color = "var(--success)";
+                prioBadge.style.background = "rgba(16,185,129,0.15)";
+            }
+
+            document.getElementById("resJevScore").textContent = jev.confidence_score != null ? `Confidence: ${jev.confidence_score}` : "";
+            document.getElementById("resJevAction").textContent = jev.recommended_action || "Standard monitoring";
+            document.getElementById("resJevSummary").textContent = jev.summary || "Case evaluated cleanly.";
+
+            const uncertDiv = document.getElementById("resJevUncertainty");
+            if (jev.uncertainty_note) {
+                uncertDiv.style.display = "block";
+                uncertDiv.textContent = "⚠️ Uncertainty Flag: " + jev.uncertainty_note;
+            } else {
+                uncertDiv.style.display = "none";
+            }
+
+            // Timeline
+            const tl = data.timeline || [];
+            const tlContainer = document.getElementById("resTimeline");
+            if (tl.length === 0) {
+                tlContainer.innerHTML = "<p style='color:var(--text-muted);font-size:12px;'>No timeline events registered.</p>";
+            } else {
+                tlContainer.innerHTML = tl.map(item => `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-header">
+                            <span class="timeline-org">${item.source_organization || "Organization"}</span>
+                            <span class="timeline-time">${item.timestamp ? new Date(item.timestamp).toLocaleString() : "N/A"}</span>
+                            <span class="scenario-badge">${item.event || item.source_status || "EVENT"}</span>
+                        </div>
+                        <div class="timeline-body">Recorded status: <strong>${item.source_status || item.event}</strong></div>
+                    </div>
+                `).join("");
+            }
+
+            // Evidence Matrix Table
+            const ev = data.evidence || [];
+            const tb = document.getElementById("resEvidenceTableBody");
+            if (ev.length === 0) {
+                tb.innerHTML = "<tr><td colspan='8' style='text-align:center;color:var(--text-muted);'>No evidence records.</td></tr>";
+            } else {
+                tb.innerHTML = ev.map(r => `
+                    <tr>
+                        <td><strong>${r.source_organization || "N/A"}</strong></td>
+                        <td><code>${r.source_record_id || "N/A"}</code></td>
+                        <td><span class="scenario-badge">${r.source_status || "N/A"}</span></td>
+                        <td>${r.customer_name || r.passenger || "—"}</td>
+                        <td><code>${r.booking_ref || "—"}</code></td>
+                        <td>${r.flight_number || r.flight || "—"}</td>
+                        <td>₹${r.refund_amount ? Number(r.refund_amount).toLocaleString("en-IN") : "0"}</td>
+                        <td>${r.timestamp ? new Date(r.timestamp).toLocaleString() : "N/A"}</td>
+                    </tr>
+                `).join("");
+            }
+
+            // Raw JSON View
+            const jsonText = JSON.stringify(data, null, 2);
+            document.getElementById("resJsonView").textContent = jsonText;
+        }
+
+        // Copy JSON Button
+        document.getElementById("btnCopyJson").addEventListener("click", () => {
+            const txt = document.getElementById("resJsonView").textContent;
+            navigator.clipboard.writeText(txt).then(() => {
+                const btn = document.getElementById("btnCopyJson");
+                btn.textContent = "✅ Copied!";
+                setTimeout(() => btn.textContent = "📋 Copy JSON", 1800);
+            });
+        });
+    </script>
+</body>
+</html>

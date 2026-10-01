@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zenpay — Next-Gen Payment Gateway & Settlement</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090d16;
+            --card: #0f172a;
+            --card-elevated: #1e293b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --line: #334155;
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.25);
+            --soft: rgba(16, 185, 129, 0.12);
+            --ok: #10b981;
+            --okb: rgba(16, 185, 129, 0.15);
+            --bad: #ef4444;
+            --badb: rgba(239, 68, 68, 0.15);
+            --warn: #f59e0b;
+            --warnb: rgba(245, 158, 11, 0.15);
+            --purple: #8b5cf6;
+            --code: #0b0f19;
+            --codet: #a7f3d0;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font: 14px/1.5 'Inter', system-ui, sans-serif;
+            background-image: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            min-height: 100vh;
+        }
+
+        /* Top Organization Navigation Bar */
+        .org-nav {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .org-nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .brand-info b {
+            font-size: 16px;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .brand-info small {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .portals-switcher {
+            display: flex;
+            align-items: center;
+            background: var(--card-elevated);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            gap: 4px;
+        }
+
+        .portal-link {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            transition: all 0.15s ease;
+        }
+
+        .portal-link:hover {
+            color: var(--text);
+        }
+
+        .portal-link.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .api-pill {
+            font-size: 11px;
+            color: #34d399;
+            background: var(--soft);
+            padding: 4px 10px;
+            border-radius: 99px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        nav {
+            display: inline-flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            border: 0;
+            background: none;
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        nav button.on {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px var(--accent-glow);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 24px;
+            margin-top: 4px;
+            color: #fff;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0 0 4px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 14px 0;
+            align-items: flex-end;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            gap: 4px;
+        }
+
+        input, select {
+            font: inherit;
+            padding: 9px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--card-elevated);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .go {
+            font: inherit;
+            font-weight: 600;
+            padding: 9px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .go:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        tbody tr:hover {
+            background: var(--card-elevated);
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .SUCCESS {
+            color: var(--ok);
+            background: var(--okb);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .FAILED {
+            color: var(--bad);
+            background: var(--badb);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .REFUNDED, .PENDING {
+            color: var(--warn);
+            background: var(--warnb);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .action-btn {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color: #34d399;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .grid div {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .grid span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 400;
+            margin-bottom: 2px;
+        }
+
+        pre {
+            background: var(--code);
+            color: var(--codet);
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            max-height: 400px;
+        }
+
+        .tag {
+            font: 12px 'JetBrains Mono', monospace;
+            background: var(--card-elevated);
+            border: 1px solid var(--line);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #34d399;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Organization Switcher -->
+    <header class="org-nav">
+        <div class="org-nav-inner">
+            <a href="payment.html" class="brand-badge">
+                <span class="logo">💳</span>
+                <div class="brand-info">
+                    <b>Zenpay</b>
+                    <small>Fintech Gateway & Settlement Engine</small>
+                </div>
+            </a>
+
+            <div class="portals-switcher">
+                <a href="index.html" class="portal-link">⚡ Fork0ff Portal</a>
+                <a href="booking.html" class="portal-link">🧭 Voyago (Booking)</a>
+                <a href="airline.html" class="portal-link">✈️ Meridian Air</a>
+                <a href="payment.html" class="portal-link active">💳 Zenpay (Payments)</a>
+            </div>
+
+            <span class="api-pill">API 5 · API 6 (Port 8003)</span>
+        </div>
+    </header>
+
+    <main>
+        <nav>
+            <button class="on" data-t="txns">Transaction Ledger</button>
+            <button data-t="create">Process Payment</button>
+            <button data-t="console">API Console</button>
+            <button data-t="docs">API Docs</button>
+        </nav>
+
+        <!-- Transactions Section -->
+        <section id="txns">
+            <div class="stats" id="stats"></div>
+
+            <div class="card">
+                <h2>Payment Transactions</h2>
+                <p class="muted">Live records synced with Zenpay Payment API (Port 8003). Notice: BK-20006 is marked FAILED, which triggers a BLOCKED state in the Fork0ff reconciliation engine.</p>
+
+                <div class="row">
+                    <input id="q" placeholder="Search payment ref, booking ref, PNR or payer" style="flex:1;min-width:240px;">
+                    <select id="st">
+                        <option value="">All statuses</option>
+                        <option>SUCCESS</option>
+                        <option>FAILED</option>
+                        <option>REFUNDED</option>
+                    </select>
+                    <button class="go" id="ref">Fetch via API 5</button>
+                </div>
+
+                <div class="scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment Ref</th>
+                                <th>Booking Ref</th>
+                                <th>Airline PNR</th>
+                                <th>Payer</th>
+                                <th>Method</th>
+                                <th>Amount (₹)</th>
+                                <th>Paid At</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tb"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card hide" id="detail">
+                <h2>Transaction & Settlement Breakdown (API 6)</h2>
+                <p class="muted">Detailed payment response loaded from GET /api/payment/transactions/{paymentRef}</p>
+                <div class="grid" id="dg"></div>
+            </div>
+        </section>
+
+        <!-- Process Payment Section -->
+        <section id="create" class="hide">
+            <div class="card">
+                <h2>Create / Process New Payment (Input into Pipeline)</h2>
+                <p class="muted">Submit a new payment record directly into Zenpay's backend server (Port 8003).</p>
+
+                <div class="row">
+                    <label>Payer Name<input id="inp_payer" value="Aarav Sharma"></label>
+                    <label>Payment Ref<input id="inp_pref" value="PAY-90099"></label>
+                    <label>Booking Ref<input id="inp_bref" value="BK-20099"></label>
+                    <label>Airline PNR<input id="inp_pnr" value="MR1099"></label>
+                    <label>Method
+                        <select id="inp_method">
+                            <option>UPI</option>
+                            <option>Credit Card</option>
+                            <option>Debit Card</option>
+                            <option>Net Banking</option>
+                        </select>
+                    </label>
+                    <label>Amount (₹)<input type="number" id="inp_amt" value="5400"></label>
+                </div>
+
+                <div class="row">
+                    <label>Status
+                        <select id="inp_st">
+                            <option value="SUCCESS" selected>SUCCESS</option>
+                            <option value="FAILED">FAILED (Simulates Blocker)</option>
+                            <option value="REFUNDED">REFUNDED</option>
+                        </select>
+                    </label>
+                    <button class="go" id="btnCreateTxn">Process Transaction & Save to API 5</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Console -->
+        <section id="console" class="hide">
+            <div class="card">
+                <h2>Payment API Console</h2>
+                <p class="muted">Call Zenpay microservice and inspect JSON response directly.</p>
+                <div class="row">
+                    <select id="ep">
+                        <option value="list">API 5 – GET /api/payment/transactions</option>
+                        <option value="one">API 6 – GET /api/payment/transactions/{paymentRef}</option>
+                    </select>
+                    <input id="arg" placeholder="Status filter (API 5) or Payment Ref (API 6)">
+                    <button class="go" id="send">Send Request</button>
+                </div>
+                <p class="muted" id="req" style="margin-bottom:8px"></p>
+                <pre id="out">Press Send Request to call API.</pre>
+            </div>
+        </section>
+
+        <!-- API Docs -->
+        <section id="docs" class="hide">
+            <div class="card">
+                <h2>API 5 – List Transactions</h2>
+                <p><span class="tag">GET /api/payment/transactions?status=</span></p>
+                <p class="muted">Returns all transaction records across Zenpay. Optional filter: <code>status</code>. Used by Fork0ff to pull payment-side evidence.</p>
+
+                <h2 style="margin-top:20px">API 6 – Transaction Detail</h2>
+                <p><span class="tag">GET /api/payment/transactions/{paymentRef}</span></p>
+                <p class="muted">Returns full transaction details with Gateway Fee and Net Settlement calculations.</p>
+
+                <h2 style="margin-top:20px">POST /api/payment/transactions</h2>
+                <p><span class="tag">POST /api/payment/transactions</span></p>
+                <p class="muted">Accepts new transaction records or status updates (e.g., simulating FAILED or setting REFUNDED).</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8003";
+
+        // Initial fallback data
+        let TRANSACTIONS = [
+            {"paymentRef":"PAY-90001","bookingRef":"BK-20001","airlinePnr":"MR1001","payer":"Aarav Sharma","method":"UPI","amount":5400,"status":"SUCCESS","paidAt":"2026-10-01 10:13"},
+            {"paymentRef":"PAY-90002","bookingRef":"BK-20002","airlinePnr":"MR1002","payer":"Priya Das","method":"Credit Card","amount":6200,"status":"SUCCESS","paidAt":"2026-10-01 11:41"},
+            {"paymentRef":"PAY-90003","bookingRef":"BK-20003","airlinePnr":"MR1003","payer":"Rohan Mehta","method":"Debit Card","amount":7100,"status":"SUCCESS","paidAt":"2026-10-02 09:06"},
+            {"paymentRef":"PAY-90004","bookingRef":"BK-20004","airlinePnr":"MR1004","payer":"Ananya Roy","method":"Net Banking","amount":5800,"status":"SUCCESS","paidAt":"2026-10-02 14:31"},
+            {"paymentRef":"PAY-90005","bookingRef":"BK-20005","airlinePnr":"MR1005","payer":"Vikram Singh","method":"UPI","amount":3200,"status":"REFUNDED","paidAt":"2026-10-03 08:21"},
+            {"paymentRef":"PAY-90006","bookingRef":"BK-20006","airlinePnr":"MR1006","payer":"Sneha Iyer","method":"Credit Card","amount":5400,"status":"FAILED","paidAt":"2026-10-03 16:46"},
+            {"paymentRef":"PAY-90007","bookingRef":"BK-20007","airlinePnr":"MR1007","payer":"Kabir Khan","method":"Debit Card","amount":5100,"status":"SUCCESS","paidAt":"2026-10-04 12:01"},
+            {"paymentRef":"PAY-90008","bookingRef":"BK-20008","airlinePnr":"MR1008","payer":"Meera Nair","method":"Net Banking","amount":7100,"status":"SUCCESS","paidAt":"2026-10-04 19:11"},
+            {"paymentRef":"PAY-90009","bookingRef":"BK-20009","airlinePnr":"MR1009","payer":"Rahul Verma","method":"UPI","amount":5400,"status":"SUCCESS","paidAt":"2026-10-05 07:56"}
+        ];
+
+        async function fetchAPI(path, opts = {}) {
+            try {
+                const res = await fetch(API_URL + path, opts);
+                if (res.ok) return await res.json();
+            } catch (e) {
+                console.warn("API 5/6 server offline, using local memory state:", e);
+            }
+            return null;
+        }
+
+        const $ = s => document.querySelector(s);
+
+        function renderRows(list) {
+            $("#tb").innerHTML = list.map(t => `
+                <tr data-pref="${t.paymentRef}">
+                    <td><strong>${t.paymentRef}</strong></td>
+                    <td><code>${t.bookingRef || '—'}</code></td>
+                    <td>${t.airlinePnr || '—'}</td>
+                    <td>${t.payer}</td>
+                    <td>${t.method}</td>
+                    <td>₹${Number(t.amount).toLocaleString("en-IN")}</td>
+                    <td>${t.paidAt}</td>
+                    <td><span class="pill ${t.status}">${t.status}</span></td>
+                    <td style="display:flex;gap:6px;">
+                        <button class="action-btn" onclick="updateStatus('${t.paymentRef}', 'REFUNDED')">Refund</button>
+                        <button class="action-btn" style="color:#ef4444;" onclick="updateStatus('${t.paymentRef}', 'FAILED')">Fail</button>
+                        <a href="index.html?bookingRef=${t.bookingRef}" class="action-btn" style="color:#a78bfa;">⚡ Reconcile</a>
+                    </td>
+                </tr>
+            `).join("") || `<tr><td colspan="9" style="text-align:center;color:var(--muted)">No transactions found.</td></tr>`;
+        }
+
+        async function loadTransactions() {
+            const st = $("#st").value;
+            const res = await fetchAPI("/api/payment/transactions" + (st ? "?status=" + st : ""));
+            if (res && res.transactions) {
+                TRANSACTIONS = res.transactions;
+            }
+            const q = $("#q").value.toLowerCase();
+            const filtered = TRANSACTIONS.filter(t => {
+                const matchesStatus = !st || t.status === st;
+                const matchesQuery = !q || Object.values(t).join(" ").toLowerCase().includes(q);
+                return matchesStatus && matchesQuery;
+            });
+            renderRows(filtered);
+            updateStats();
+        }
+
+        async function updateStatus(paymentRef, newStatus) {
+            const t = TRANSACTIONS.find(x => x.paymentRef === paymentRef);
+            if (!t) return;
+            t.status = newStatus;
+            await fetchAPI("/api/payment/transactions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(t)
+            });
+            alert(`Payment ${paymentRef} updated to ${newStatus}. Reconcile on Fork0ff to observe state changes!`);
+            loadTransactions();
+        }
+
+        // Create Transaction
+        $("#btnCreateTxn").onclick = async () => {
+            const txn = {
+                payer: $("#inp_payer").value,
+                paymentRef: $("#inp_pref").value.toUpperCase(),
+                bookingRef: $("#inp_bref").value.toUpperCase(),
+                airlinePnr: $("#inp_pnr").value.toUpperCase(),
+                method: $("#inp_method").value,
+                amount: Number($("#inp_amt").value) || 5400,
+                status: $("#inp_st").value,
+                paidAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+                currency: "INR"
+            };
+
+            await fetchAPI("/api/payment/transactions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(txn)
+            });
+
+            TRANSACTIONS.push(txn);
+            alert(`Transaction ${txn.paymentRef} created successfully!`);
+            document.querySelector("nav button[data-t='txns']").click();
+            loadTransactions();
+        };
+
+        // Click row for detail
+        $("#tb").onclick = async e => {
+            const tr = e.target.closest("tr");
+            if (!tr || !tr.dataset.pref) return;
+            const pref = tr.dataset.pref;
+            let data = await fetchAPI("/api/payment/transactions/" + pref);
+            if (!data) {
+                const t = TRANSACTIONS.find(x => x.paymentRef === pref);
+                if (t) {
+                    const fee = round(t.amount * 0.02);
+                    data = { ...t, gatewayFee: fee, netSettlement: t.amount - fee };
+                }
+            }
+            if (data) {
+                const f = [
+                    ["Payment Ref", data.paymentRef],
+                    ["Booking Ref", data.bookingRef],
+                    ["Airline PNR", data.airlinePnr],
+                    ["Payer", data.payer],
+                    ["Method", data.method],
+                    ["Gross Amount", "₹" + data.amount],
+                    ["Gateway Fee (2%)", "₹" + (data.gatewayFee != null ? data.gatewayFee : 0)],
+                    ["Net Settlement", "₹" + (data.netSettlement != null ? data.netSettlement : data.amount)],
+                    ["Status", data.status],
+                    ["Paid At", data.paidAt]
+                ];
+                $("#dg").innerHTML = f.map(x => `<div><span>${x[0]}</span>${x[1]}</div>`).join("");
+                $("#detail").classList.remove("hide");
+                $("#detail").scrollIntoView({ behavior: "smooth" });
+            }
+        };
+
+        function updateStats() {
+            const c = s => TRANSACTIONS.filter(t => t.status === s).length;
+            const vol = TRANSACTIONS.filter(t => t.status === "SUCCESS").reduce((acc, t) => acc + (t.amount || 0), 0);
+            $("#stats").innerHTML = [
+                ["Total Transactions", TRANSACTIONS.length],
+                ["Successful", c("SUCCESS")],
+                ["Failed / Refunded", c("FAILED") + c("REFUNDED")],
+                ["Settled Volume", "₹" + vol.toLocaleString("en-IN")]
+            ].map(x => `<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+        }
+
+        // Navigation
+        document.querySelectorAll("nav button").forEach(b => {
+            b.onclick = () => {
+                document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+                ["txns", "create", "console", "docs"].forEach(id => $("#" + id).classList.toggle("hide", id !== b.dataset.t));
+            };
+        });
+
+        // Search and filters
+        $("#ref").onclick = loadTransactions;
+        $("#st").onchange = loadTransactions;
+        $("#q").oninput = loadTransactions;
+
+        // API Console
+        $("#send").onclick = async () => {
+            const a = $("#arg").value.trim();
+            const path = $("#ep").value === "list" ? "/api/payment/transactions" + (a ? "?status=" + encodeURIComponent(a.toUpperCase()) : "") : "/api/payment/transactions/" + encodeURIComponent(a || "PAY-90001");
+            $("#req").textContent = "GET " + path;
+            const r = await fetchAPI(path);
+            $("#out").textContent = JSON.stringify(r || { error: "Service offline" }, null, 2);
+        };
+
+        loadTransactions();
+    </script>
+</body>
+</html>

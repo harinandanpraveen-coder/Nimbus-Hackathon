@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Voyago – Travel Booking Website</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0f16;
+            --card: #151a25;
+            --card-elevated: #1e2636;
+            --text: #eef1f7;
+            --muted: #98a1b3;
+            --line: #252c3b;
+            --accent: #ff7a52;
+            --accent-glow: rgba(255, 122, 82, 0.25);
+            --soft: #3a1f17;
+            --ok: #4cd6a0;
+            --okb: #12302a;
+            --bad: #ff8a8a;
+            --badb: #38191c;
+            --warn: #f5b361;
+            --warnb: #372a14;
+            --code: #0b0e14;
+            --codet: #fed7aa;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font: 14px/1.5 'Inter', system-ui, sans-serif;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 15% 15%, rgba(255, 122, 82, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 85% 85%, rgba(245, 179, 97, 0.05) 0%, transparent 40%);
+        }
+
+        /* Top Organization Navigation Bar */
+        .org-nav {
+            background: rgba(21, 26, 37, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .org-nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff7a52, #e4572e);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .brand-info b {
+            font-size: 16px;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .brand-info small {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .portals-switcher {
+            display: flex;
+            align-items: center;
+            background: var(--card-elevated);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            gap: 4px;
+        }
+
+        .portal-link {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            transition: all 0.15s ease;
+        }
+
+        .portal-link:hover {
+            color: var(--text);
+        }
+
+        .portal-link.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .api-pill {
+            font-size: 11px;
+            color: var(--accent);
+            background: var(--soft);
+            padding: 4px 10px;
+            border-radius: 99px;
+            border: 1px solid rgba(255, 122, 82, 0.3);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        nav {
+            display: inline-flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            border: 0;
+            background: none;
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        nav button.on {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px var(--accent-glow);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 24px;
+            margin-top: 4px;
+            color: #fff;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0 0 4px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 14px 0;
+            align-items: flex-end;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            gap: 4px;
+        }
+
+        input, select {
+            font: inherit;
+            padding: 9px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--card-elevated);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .go {
+            font: inherit;
+            font-weight: 600;
+            padding: 9px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .go:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 780px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        tbody tr:hover {
+            background: var(--card-elevated);
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .CONFIRMED, .PAID {
+            color: var(--ok);
+            background: var(--okb);
+            border: 1px solid rgba(76, 214, 160, 0.3);
+        }
+
+        .CANCELLED, .FAILED {
+            color: var(--bad);
+            background: var(--badb);
+            border: 1px solid rgba(255, 138, 138, 0.3);
+        }
+
+        .REFUND_INITIATED, .PENDING {
+            color: var(--warn);
+            background: var(--warnb);
+            border: 1px solid rgba(245, 179, 97, 0.3);
+        }
+
+        .offer {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+            flex-wrap: wrap;
+        }
+
+        .offer:last-child {
+            border-bottom: 0;
+        }
+
+        .offer .t {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .offer b {
+            font-size: 15px;
+        }
+
+        .offer .p {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .grid div {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .grid span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 400;
+            margin-bottom: 2px;
+        }
+
+        pre {
+            background: var(--code);
+            color: var(--codet);
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            max-height: 400px;
+        }
+
+        .tag {
+            font: 12px 'JetBrains Mono', monospace;
+            background: var(--card-elevated);
+            border: 1px solid var(--line);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: var(--accent);
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Organization Switcher -->
+    <header class="org-nav">
+        <div class="org-nav-inner">
+            <a href="booking.html" class="brand-badge">
+                <span class="logo">🧭</span>
+                <div class="brand-info">
+                    <b>Voyago</b>
+                    <small>Travel Booking Website</small>
+                </div>
+            </a>
+
+            <div class="portals-switcher">
+                <a href="index.html" class="portal-link">⚡ Fork0ff Portal</a>
+                <a href="booking.html" class="portal-link active">🧭 Voyago (Booking)</a>
+                <a href="airline.html" class="portal-link">✈️ Meridian Air</a>
+                <a href="payment.html" class="portal-link">💳 Zenpay (Payments)</a>
+            </div>
+
+            <span class="api-pill">API 1 · API 2 (Port 8001)</span>
+        </div>
+    </header>
+
+    <main>
+        <nav>
+            <button class="on" data-t="search">Search flights</button>
+            <button data-t="bookings">My bookings</button>
+            <button data-t="create">New Booking</button>
+            <button data-t="console">API Console</button>
+            <button data-t="docs">API Docs</button>
+        </nav>
+
+        <!-- Search Flights Section -->
+        <section id="search">
+            <div class="card">
+                <h2>Find flights</h2>
+                <p class="muted">Search routes across India. Clicking "Book" creates an official booking record in Voyago's backend (Port 8001).</p>
+                <div class="row">
+                    <label>From<select id="from"></select></label>
+                    <label>To<select id="to"></select></label>
+                    <label>Date<input type="date" id="date" value="2026-10-10"></label>
+                    <label>Travellers<input type="number" id="pax" value="1" min="1" max="6" style="width:90px"></label>
+                    <button class="go" id="find">Search</button>
+                </div>
+                <div id="offers"></div>
+            </div>
+        </section>
+
+        <!-- Bookings Section -->
+        <section id="bookings" class="hide">
+            <div class="stats" id="stats"></div>
+            <div class="card">
+                <h2>Booking records</h2>
+                <p class="muted">Live records synced with Booking API Server (Port 8001). Click "Initiate Refund" to request a refund, or "⚡ Reconcile" to inspect resolution in Fork0ff.</p>
+                <div class="row">
+                    <input id="q" placeholder="Search booking ref, customer or PNR" style="flex:1;min-width:240px;">
+                    <select id="st">
+                        <option value="">All statuses</option>
+                        <option>CONFIRMED</option>
+                        <option>CANCELLED</option>
+                        <option>REFUND_INITIATED</option>
+                    </select>
+                    <button class="go" id="ref">Fetch via API 1</button>
+                </div>
+                <div class="scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ref</th>
+                                <th>Customer</th>
+                                <th>Airline PNR</th>
+                                <th>Route</th>
+                                <th>Amount (₹)</th>
+                                <th>Payment Ref</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tb"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card hide" id="detail">
+                <h2>Booking detail</h2>
+                <p class="muted">Response from API 2</p>
+                <div class="grid" id="dg"></div>
+            </div>
+        </section>
+
+        <!-- New Booking Section -->
+        <section id="create" class="hide">
+            <div class="card">
+                <h2>Create Custom Booking (Input into Pipeline)</h2>
+                <p class="muted">Submit a custom booking record directly to Voyago API Server (Port 8001).</p>
+                <div class="row">
+                    <label>Customer Name<input id="inp_cust" value="Siddharth Rao"></label>
+                    <label>Booking Ref<input id="inp_bref" value="BK-20090"></label>
+                    <label>Airline PNR<input id="inp_pnr" value="MR1090"></label>
+                    <label>Flight No<input id="inp_flight" value="MR201"></label>
+                    <label>Origin<input id="inp_orig" value="CCU"></label>
+                    <label>Destination<input id="inp_dest" value="DEL"></label>
+                </div>
+                <div class="row">
+                    <label>Amount (₹)<input type="number" id="inp_amt" value="5400"></label>
+                    <label>Payment Ref<input id="inp_pref" value="PAY-90090"></label>
+                    <label>Status
+                        <select id="inp_st">
+                            <option value="CONFIRMED" selected>CONFIRMED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                            <option value="REFUND_INITIATED">REFUND_INITIATED</option>
+                        </select>
+                    </label>
+                    <button class="go" id="btnCreateBooking">Create Booking & Save to API 1</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Console -->
+        <section id="console" class="hide">
+            <div class="card">
+                <h2>API Console</h2>
+                <p class="muted">Call the booking APIs and inspect the JSON response.</p>
+                <div class="row">
+                    <select id="ep">
+                        <option value="list">API 1 – GET /api/booking/bookings</option>
+                        <option value="one">API 2 – GET /api/booking/bookings/{bookingRef}</option>
+                    </select>
+                    <input id="arg" placeholder="status (API 1) or booking ref (API 2)">
+                    <button class="go" id="send">Send</button>
+                </div>
+                <p class="muted" id="req" style="margin-bottom:8px"></p>
+                <pre id="out">Press Send to call an API.</pre>
+            </div>
+        </section>
+
+        <!-- API Docs -->
+        <section id="docs" class="hide">
+            <div class="card">
+                <h2>API 1 – List bookings</h2>
+                <p><span class="tag">GET /api/booking/bookings?status=</span></p>
+                <p class="muted">Returns all booking records (booking ref, customer, airline PNR, route, amount, payment
+                    ref, status). Optional filter: status. Used by Fork0ff to pull booking-side records.</p>
+                <h2 style="margin-top:20px">API 2 – Booking detail</h2>
+                <p><span class="tag">GET /api/booking/bookings/{bookingRef}</span></p>
+                <p class="muted">Returns one booking with fare breakdown (base fare, taxes, convenience fee), contact
+                    details and booking time. 404 if the reference is unknown.</p>
+                <h2 style="margin-top:20px">POST /api/booking/bookings</h2>
+                <p><span class="tag">POST /api/booking/bookings</span></p>
+                <p class="muted">Accepts new booking records or updates status (e.g., initiating refund or cancelling a ticket).</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8001";
+
+        let R = [
+            ["BK-20001", "Aarav Sharma", "MR1001", "MR201", "CCU", "DEL", 5400, "PAY-90001", "CONFIRMED", "2026-10-01 10:12"],
+            ["BK-20002", "Priya Das", "MR1002", "MR305", "CCU", "BOM", 6200, "PAY-90002", "CONFIRMED", "2026-10-01 11:40"],
+            ["BK-20003", "Rohan Mehta", "MR1003", "MR118", "DEL", "BLR", 7100, "PAY-90003", "CONFIRMED", "2026-10-02 09:05"],
+            ["BK-20004", "Ananya Roy", "MR1004", "MR410", "BOM", "CCU", 5800, "PAY-90004", "CANCELLED", "2026-10-02 14:30"],
+            ["BK-20005", "Vikram Singh", "MR1005", "MR222", "BLR", "HYD", 3200, "PAY-90005", "REFUND_INITIATED", "2026-10-03 08:20"],
+            ["BK-20006", "Sneha Iyer", "MR1006", "MR201", "CCU", "DEL", 5400, "PAY-90006", "CONFIRMED", "2026-10-03 16:45"],
+            ["BK-20007", "Kabir Khan", "MR1007", "MR509", "HYD", "CCU", 5100, "PAY-90007", "CONFIRMED", "2026-10-04 12:00"],
+            ["BK-20008", "Meera Nair", "MR1008", "MR118", "DEL", "BLR", 7100, "PAY-90008", "CONFIRMED", "2026-10-04 19:10"],
+            ["BK-20009", "Rahul Verma", "MR1009", "MR201", "CCU", "DEL", 5400, "PAY-90009", "CONFIRMED", "2026-10-05 07:55"]
+        ].map(r => ({ bookingRef: r[0], customer: r[1], airlinePnr: r[2], flightNo: r[3], origin: r[4], destination: r[5], amount: r[6], paymentRef: r[7], status: r[8], bookedAt: r[9], currency: "INR", email: r[1].split(" ")[0].toLowerCase() + "@example.com" }));
+
+        const F = [["MR201", "CCU", "DEL", "06:15", "08:35", 5400], ["MR214", "CCU", "DEL", "13:20", "15:40", 5900], ["MR305", "CCU", "BOM", "09:40", "12:10", 6200], ["MR118", "DEL", "BLR", "18:05", "20:50", 7100], ["MR410", "BOM", "CCU", "13:25", "15:55", 5800], ["MR222", "BLR", "HYD", "07:50", "09:00", 3200], ["MR509", "HYD", "CCU", "21:10", "23:00", 4900]];
+        const CITIES = ["CCU", "DEL", "BOM", "BLR", "HYD"];
+
+        // Live API with fallback to local memory
+        async function api(path, opts = {}) {
+            try {
+                const res = await fetch(API_URL + path, opts);
+                if (res.ok) {
+                    const data = await res.json();
+                    return { status: res.status, body: data };
+                }
+            } catch (e) {
+                console.warn("Booking API server offline, falling back to local data:", e);
+            }
+
+            // Local fallback
+            const u = new URL(path, "http://x");
+            const p = u.pathname;
+            if (p === "/api/booking/bookings") {
+                const s = u.searchParams.get("status");
+                const d = R.filter(b => !s || b.status === s);
+                return { status: 200, body: { api: "API 1", count: d.length, bookings: d } };
+            }
+            const m = p.match(/^\/api\/booking\/bookings\/([^/]+)$/);
+            if (m) {
+                const b = R.find(x => x.bookingRef === m[1].toUpperCase());
+                if (!b) return { status: 404, body: { api: "API 2", error: "Booking not found" } };
+                const fee = b.amount > 5000 ? 299 : 199, tax = Math.round((b.amount - fee) * 0.18), base = b.amount - fee - tax;
+                return { status: 200, body: { api: "API 2", ...b, fareBreakdown: { baseFare: base, taxes: tax, convenienceFee: fee, total: b.amount } } };
+            }
+            return { status: 404, body: { error: "Unknown endpoint" } };
+        }
+
+        const $ = s => document.querySelector(s);
+        $("#from").innerHTML = CITIES.map(c => `<option ${c == "CCU" ? "selected" : ""}>${c}</option>`).join("");
+        $("#to").innerHTML = CITIES.map(c => `<option ${c == "DEL" ? "selected" : ""}>${c}</option>`).join("");
+
+        function offers() {
+            const f = $("#from").value, t = $("#to").value, n = +$("#pax").value || 1;
+            const l = F.filter(x => x[1] === f && x[2] === t);
+            $("#offers").innerHTML = l.length ? l.map(x => `
+                <div class="offer">
+                    <div class="t">
+                        <b>${x[0]} · ${x[1]} → ${x[2]}</b>
+                        <div class="muted">${x[3]} – ${x[4]} · ${$("#date").value}</div>
+                    </div>
+                    <div class="p">₹${(x[5] * n).toLocaleString("en-IN")}</div>
+                    <button class="go" onclick="bookOffer('${x[0]}', '${x[1]}', '${x[2]}', ${x[5] * n})">Book Flight</button>
+                </div>
+            `).join("") : `<p class="muted">No flights on this route in the sample data.</p>`;
+        }
+        $("#find").onclick = offers;
+
+        async function bookOffer(flightNo, orig, dest, amt) {
+            const name = prompt("Enter Traveler Passenger Name:", "New Passenger");
+            if (!name) return;
+            const newRef = "BK-" + Math.floor(20000 + Math.random() * 9000);
+            const pnr = "MR" + Math.floor(1000 + Math.random() * 9000);
+            const payRef = "PAY-" + Math.floor(90000 + Math.random() * 9000);
+
+            const record = {
+                bookingRef: newRef,
+                customer: name,
+                airlinePnr: pnr,
+                flightNo: flightNo,
+                origin: orig,
+                destination: dest,
+                amount: amt,
+                paymentRef: payRef,
+                status: "CONFIRMED",
+                bookedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+                currency: "INR",
+                email: name.split(" ")[0].toLowerCase() + "@example.com"
+            };
+
+            await api("/api/booking/bookings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(record)
+            });
+
+            R.unshift(record);
+            alert(`Flight booked successfully! Booking Ref: ${newRef}, Airline PNR: ${pnr}`);
+            document.querySelector("nav button[data-t='bookings']").click();
+            load();
+        }
+
+        function rows(list) {
+            $("#tb").innerHTML = list.map(t => `
+                <tr data-p="${t.bookingRef}">
+                    <td><strong>${t.bookingRef}</strong></td>
+                    <td>${t.customer}</td>
+                    <td><code>${t.airlinePnr}</code></td>
+                    <td>${t.origin} → ${t.destination}</td>
+                    <td>₹${t.amount.toLocaleString("en-IN")}</td>
+                    <td><code>${t.paymentRef}</code></td>
+                    <td><span class="pill ${t.status}">${t.status.replace("_", " ")}</span></td>
+                    <td style="display:flex;gap:6px;">
+                        <button class="action-btn" onclick="initiateRefund('${t.bookingRef}')">Initiate Refund</button>
+                        <a href="index.html?bookingRef=${t.bookingRef}" class="action-btn" style="color:#a78bfa;">⚡ Reconcile</a>
+                    </td>
+                </tr>
+            `).join("") || `<tr><td colspan="8">No records</td></tr>`;
+        }
+
+        async function initiateRefund(bookingRef) {
+            const b = R.find(x => x.bookingRef === bookingRef);
+            if (!b) return;
+            b.status = "REFUND_INITIATED";
+            await api("/api/booking/bookings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(b)
+            });
+            alert(`Refund initiated for ${bookingRef}. Status updated to REFUND_INITIATED. Reconcile on Fork0ff to observe!`);
+            load();
+        }
+
+        async function load() {
+            const stVal = $("#st").value;
+            const r = await api("/api/booking/bookings" + (stVal ? "?status=" + stVal : ""));
+            if (r.body && r.body.bookings) {
+                R = r.body.bookings;
+            }
+            const q = $("#q").value.toLowerCase();
+            rows(R.filter(t => (!stVal || t.status === stVal) && (!q || Object.values(t).join(" ").toLowerCase().includes(q))));
+            stats();
+        }
+
+        // Create Booking form submit
+        $("#btnCreateBooking").onclick = async () => {
+            const record = {
+                customer: $("#inp_cust").value,
+                bookingRef: $("#inp_bref").value.toUpperCase(),
+                airlinePnr: $("#inp_pnr").value.toUpperCase(),
+                flightNo: $("#inp_flight").value.toUpperCase(),
+                origin: $("#inp_orig").value.toUpperCase(),
+                destination: $("#inp_dest").value.toUpperCase(),
+                amount: Number($("#inp_amt").value) || 5400,
+                paymentRef: $("#inp_pref").value.toUpperCase(),
+                status: $("#inp_st").value,
+                bookedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+                currency: "INR"
+            };
+
+            await api("/api/booking/bookings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(record)
+            });
+
+            R.unshift(record);
+            alert(`Booking ${record.bookingRef} created successfully!`);
+            document.querySelector("nav button[data-t='bookings']").click();
+            load();
+        };
+
+        $("#tb").onclick = async e => {
+            const tr = e.target.closest("tr");
+            if (!tr || !tr.dataset.p || e.target.tagName === "BUTTON" || e.target.tagName === "A") return;
+            const r = (await api("/api/booking/bookings/" + tr.dataset.p)).body;
+            const fee = r.fareBreakdown ? r.fareBreakdown.convenienceFee : 199;
+            const taxes = r.fareBreakdown ? r.fareBreakdown.taxes : Math.round(r.amount * 0.18);
+            const base = r.fareBreakdown ? r.fareBreakdown.baseFare : r.amount - taxes - fee;
+            const f = [
+                ["Booking ref", r.bookingRef],
+                ["Customer", r.customer],
+                ["Airline PNR", r.airlinePnr],
+                ["Flight", r.flightNo],
+                ["Route", (r.origin || "") + " → " + (r.destination || "")],
+                ["Booked at", r.bookedAt],
+                ["Base fare", "₹" + base],
+                ["Taxes", "₹" + taxes],
+                ["Convenience fee", "₹" + fee],
+                ["Total", "₹" + r.amount],
+                ["Payment ref", r.paymentRef],
+                ["Status", r.status]
+            ];
+            $("#dg").innerHTML = f.map(x => `<div><span>${x[0]}</span>${x[1]}</div>`).join("");
+            $("#detail").classList.remove("hide");
+            $("#detail").scrollIntoView({ behavior: "smooth" });
+        };
+
+        $("#ref").onclick = load;
+        $("#st").onchange = load;
+        $("#q").oninput = load;
+
+        document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+            document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+            ["search", "bookings", "create", "console", "docs"].forEach(id => $("#" + id).classList.toggle("hide", id !== b.dataset.t));
+        });
+
+        $("#send").onclick = async () => {
+            const a = $("#arg").value.trim();
+            const path = $("#ep").value === "list" ? "/api/booking/bookings" + (a ? "?status=" + encodeURIComponent(a.toUpperCase()) : "") : "/api/booking/bookings/" + encodeURIComponent(a || "BK-20001");
+            $("#req").textContent = "GET " + path;
+            const r = await api(path);
+            $("#out").textContent = "HTTP " + r.status + "\n" + JSON.stringify(r.body, null, 2);
+        };
+
+        function stats() {
+            const c = x => R.filter(t => x.includes(t.status)).length;
+            const v = R.filter(t => t.status === "CONFIRMED").reduce((a, t) => a + (t.amount || 0), 0);
+            $("#stats").innerHTML = [
+                ["Total bookings", R.length],
+                ["Confirmed", c(["CONFIRMED"])],
+                ["Cancelled / refund", c(["CANCELLED", "REFUND_INITIATED"])],
+                ["Confirmed value", "₹" + v.toLocaleString("en-IN")]
+            ].map(x => `<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+        }
+
+        offers();
+        stats();
+        load();
+    </script>
+</body>
+
+</html>

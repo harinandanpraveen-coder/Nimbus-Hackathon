@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meridian Air — Airline Operations & Ticket Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090e17;
+            --card: #111a28;
+            --card-elevated: #182438;
+            --text: #f0f6fc;
+            --muted: #8b9bb4;
+            --line: #223249;
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.25);
+            --soft: #082f49;
+            --ok: #10b981;
+            --okb: rgba(16, 185, 129, 0.15);
+            --bad: #ef4444;
+            --badb: rgba(239, 68, 68, 0.15);
+            --warn: #f59e0b;
+            --warnb: rgba(245, 158, 11, 0.15);
+            --code: #0b111c;
+            --codet: #bae6fd;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font: 14px/1.5 'Inter', system-ui, sans-serif;
+            background-image: radial-gradient(circle at 10% 20%, rgba(2, 132, 199, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+            min-height: 100vh;
+        }
+
+        /* Top Organization Navigation Bar */
+        .org-nav {
+            background: rgba(17, 26, 40, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .org-nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .brand-info b {
+            font-size: 16px;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .brand-info small {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .portals-switcher {
+            display: flex;
+            align-items: center;
+            background: var(--card-elevated);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            gap: 4px;
+        }
+
+        .portal-link {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            transition: all 0.15s ease;
+        }
+
+        .portal-link:hover {
+            color: var(--text);
+        }
+
+        .portal-link.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .api-pill {
+            font-size: 11px;
+            color: #38bdf8;
+            background: var(--soft);
+            padding: 4px 10px;
+            border-radius: 99px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        nav {
+            display: inline-flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            border: 0;
+            background: none;
+            color: var(--muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        nav button.on {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px var(--accent-glow);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 24px;
+            margin-top: 4px;
+            color: #fff;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0 0 4px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 14px 0;
+            align-items: flex-end;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            gap: 4px;
+        }
+
+        input, select {
+            font: inherit;
+            padding: 9px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--card-elevated);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .go {
+            font: inherit;
+            font-weight: 600;
+            padding: 9px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .go:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 780px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        tbody tr:hover {
+            background: var(--card-elevated);
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .CONFIRMED, .CHECKED_IN {
+            color: var(--ok);
+            background: var(--okb);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .CANCELLED {
+            color: var(--bad);
+            background: var(--badb);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .REFUNDED, .REFUND_AUTHORIZED {
+            color: var(--warn);
+            background: var(--warnb);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .action-btn {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color: #38bdf8;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .grid div {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .grid span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 400;
+            margin-bottom: 2px;
+        }
+
+        pre {
+            background: var(--code);
+            color: var(--codet);
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            max-height: 400px;
+        }
+
+        .tag {
+            font: 12px 'JetBrains Mono', monospace;
+            background: var(--card-elevated);
+            border: 1px solid var(--line);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #38bdf8;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Organization Switcher -->
+    <header class="org-nav">
+        <div class="org-nav-inner">
+            <a href="airline.html" class="brand-badge">
+                <span class="logo">✈️</span>
+                <div class="brand-info">
+                    <b>Meridian Air</b>
+                    <small>Airline Operations & Ticket Portal</small>
+                </div>
+            </a>
+
+            <div class="portals-switcher">
+                <a href="index.html" class="portal-link">⚡ Fork0ff Portal</a>
+                <a href="booking.html" class="portal-link">🧭 Voyago (Booking)</a>
+                <a href="airline.html" class="portal-link active">✈️ Meridian Air</a>
+                <a href="payment.html" class="portal-link">💳 Zenpay (Payments)</a>
+            </div>
+
+            <span class="api-pill">API 3 · API 4 (Port 8002)</span>
+        </div>
+    </header>
+
+    <main>
+        <nav>
+            <button class="on" data-t="tickets">Tickets Manifest</button>
+            <button data-t="issue">Issue New Ticket</button>
+            <button data-t="console">API Console</button>
+            <button data-t="docs">API Docs</button>
+        </nav>
+
+        <!-- Tickets Section -->
+        <section id="tickets">
+            <div class="stats" id="stats"></div>
+
+            <div class="card">
+                <h2>Airline Ticket Records</h2>
+                <p class="muted">Live records synced with Meridian Air Microservice (Port 8002). Click "Authorize Refund" or "Reconcile" to feed data to Fork0ff resolution layer.</p>
+
+                <div class="row">
+                    <input id="q" placeholder="Search PNR, passenger, flight or booking ref" style="flex:1;min-width:240px;">
+                    <select id="st">
+                        <option value="">All statuses</option>
+                        <option>CONFIRMED</option>
+                        <option>CHECKED_IN</option>
+                        <option>CANCELLED</option>
+                        <option>REFUNDED</option>
+                    </select>
+                    <button class="go" id="ref">Fetch via API 3</button>
+                </div>
+
+                <div class="scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Booking Ref</th>
+                                <th>Passenger</th>
+                                <th>Flight</th>
+                                <th>Route</th>
+                                <th>Departure</th>
+                                <th>Fare (₹)</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tb"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card hide" id="detail">
+                <h2>Ticket & Fare Breakdown (API 4)</h2>
+                <p class="muted">Detailed ticket response loaded from GET /api/airline/tickets/{pnr}</p>
+                <div class="grid" id="dg"></div>
+            </div>
+        </section>
+
+        <!-- Issue Ticket Section -->
+        <section id="issue" class="hide">
+            <div class="card">
+                <h2>Issue New Ticket Record (Input into Pipeline)</h2>
+                <p class="muted">Submit a new airline record directly into Meridian Air's backend server (Port 8002).</p>
+
+                <div class="row">
+                    <label>Passenger Name<input id="inp_pax" value="Aarav Sharma"></label>
+                    <label>PNR<input id="inp_pnr" value="MR1099"></label>
+                    <label>Booking Ref<input id="inp_bref" value="BK-20099"></label>
+                    <label>Flight No<input id="inp_flight" value="MR201"></label>
+                    <label>Origin<input id="inp_orig" value="CCU"></label>
+                    <label>Destination<input id="inp_dest" value="DEL"></label>
+                </div>
+
+                <div class="row">
+                    <label>Departure Date/Time<input type="datetime-local" id="inp_dep" value="2026-10-10T06:15"></label>
+                    <label>Fare (₹)<input type="number" id="inp_fare" value="5400"></label>
+                    <label>Seat<input id="inp_seat" value="14A"></label>
+                    <label>Status
+                        <select id="inp_st">
+                            <option value="CONFIRMED" selected>CONFIRMED</option>
+                            <option value="CHECKED_IN">CHECKED_IN</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                            <option value="REFUNDED">REFUNDED</option>
+                        </select>
+                    </label>
+                    <label>Payment Ref<input id="inp_pref" value="PAY-90099"></label>
+                    <button class="go" id="btnIssueTicket">Issue Ticket & Save to API 3</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Console -->
+        <section id="console" class="hide">
+            <div class="card">
+                <h2>Airline API Console</h2>
+                <p class="muted">Call Meridian Air microservice and inspect JSON response directly.</p>
+                <div class="row">
+                    <select id="ep">
+                        <option value="list">API 3 – GET /api/airline/tickets</option>
+                        <option value="one">API 4 – GET /api/airline/tickets/{pnr}</option>
+                    </select>
+                    <input id="arg" placeholder="Status filter (API 3) or PNR (API 4)">
+                    <button class="go" id="send">Send Request</button>
+                </div>
+                <p class="muted" id="req" style="margin-bottom:8px"></p>
+                <pre id="out">Press Send Request to call API.</pre>
+            </div>
+        </section>
+
+        <!-- API Docs -->
+        <section id="docs" class="hide">
+            <div class="card">
+                <h2>API 3 – List Tickets</h2>
+                <p><span class="tag">GET /api/airline/tickets?status=</span></p>
+                <p class="muted">Returns all ticket records across Meridian Air flights. Optional filter: <code>status</code>. Used by Fork0ff to pull airline-side evidence.</p>
+
+                <h2 style="margin-top:20px">API 4 – Ticket Detail</h2>
+                <p><span class="tag">GET /api/airline/tickets/{pnr}</span></p>
+                <p class="muted">Returns one ticket with fare breakdown (base fare, taxes, total fare) and passenger seat details.</p>
+
+                <h2 style="margin-top:20px">POST /api/airline/tickets</h2>
+                <p><span class="tag">POST /api/airline/tickets</span></p>
+                <p class="muted">Accepts new ticket records or status updates (e.g., updating a ticket from CONFIRMED to REFUNDED).</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8002";
+
+        // Initial records fallback
+        let TICKETS = [
+            {"pnr":"MR1001","bookingRef":"BK-20001","passenger":"Aarav Sharma","flightNo":"MR201","origin":"CCU","destination":"DEL","departure":"2026-10-10 06:15","fare":5400,"status":"CONFIRMED","seat":"12A","baggageKg":15,"paymentRef":"PAY-90001","currency":"INR"},
+            {"pnr":"MR1002","bookingRef":"BK-20002","passenger":"Priya Das","flightNo":"MR305","origin":"CCU","destination":"BOM","departure":"2026-10-11 09:40","fare":6200,"status":"CHECKED_IN","seat":"14C","baggageKg":20,"paymentRef":"PAY-90002","currency":"INR"},
+            {"pnr":"MR1003","bookingRef":"BK-20003","passenger":"Rohan Mehta","flightNo":"MR118","origin":"DEL","destination":"BLR","departure":"2026-10-12 18:05","fare":7100,"status":"CONFIRMED","seat":"7F","baggageKg":15,"paymentRef":"PAY-90003","currency":"INR"},
+            {"pnr":"MR1004","bookingRef":"BK-20004","passenger":"Ananya Roy","flightNo":"MR410","origin":"BOM","destination":"CCU","departure":"2026-10-13 13:25","fare":5800,"status":"CANCELLED","seat":"—","baggageKg":0,"paymentRef":"PAY-90004","currency":"INR"},
+            {"pnr":"MR1005","bookingRef":"BK-20005","passenger":"Vikram Singh","flightNo":"MR222","origin":"BLR","destination":"HYD","departure":"2026-10-14 07:50","fare":3200,"status":"REFUNDED","seat":"—","baggageKg":0,"paymentRef":"PAY-90005","currency":"INR"},
+            {"pnr":"MR1006","bookingRef":"BK-20006","passenger":"Sneha Iyer","flightNo":"MR201","origin":"CCU","destination":"DEL","departure":"2026-10-10 06:15","fare":5400,"status":"CONFIRMED","seat":"12B","baggageKg":25,"paymentRef":"PAY-90006","currency":"INR"},
+            {"pnr":"MR1007","bookingRef":"BK-20007","passenger":"Kabir Khan","flightNo":"MR509","origin":"HYD","destination":"CCU","departure":"2026-10-15 21:10","fare":4900,"status":"CONFIRMED","seat":"3D","baggageKg":15,"paymentRef":"PAY-90007","currency":"INR"},
+            {"pnr":"MR1008","bookingRef":"BK-20008","passenger":"Meera Nair","flightNo":"MR118","origin":"DEL","destination":"BLR","departure":"2026-10-12 18:05","fare":7100,"status":"CHECKED_IN","seat":"8A","baggageKg":20,"paymentRef":"PAY-90008","currency":"INR"}
+        ];
+
+        async function fetchAPI(path, opts = {}) {
+            try {
+                const res = await fetch(API_URL + path, opts);
+                if (res.ok) return await res.json();
+            } catch (e) {
+                console.warn("API 3/4 server offline, using local memory state:", e);
+            }
+            return null;
+        }
+
+        const $ = s => document.querySelector(s);
+
+        function renderRows(list) {
+            $("#tb").innerHTML = list.map(t => `
+                <tr data-pnr="${t.pnr}">
+                    <td><strong>${t.pnr}</strong></td>
+                    <td><code>${t.bookingRef || '—'}</code></td>
+                    <td>${t.passenger}</td>
+                    <td>${t.flightNo}</td>
+                    <td>${t.origin} → ${t.destination}</td>
+                    <td>${t.departure}</td>
+                    <td>₹${Number(t.fare).toLocaleString("en-IN")}</td>
+                    <td><span class="pill ${t.status}">${t.status.replace("_", " ")}</span></td>
+                    <td style="display:flex;gap:6px;">
+                        <button class="action-btn" onclick="authorizeRefund('${t.pnr}')">Authorize Refund</button>
+                        <a href="index.html?bookingRef=${t.bookingRef}" class="action-btn" style="color:#a78bfa;">⚡ Reconcile</a>
+                    </td>
+                </tr>
+            `).join("") || `<tr><td colspan="9" style="text-align:center;color:var(--muted)">No tickets found.</td></tr>`;
+        }
+
+        async function loadTickets() {
+            const st = $("#st").value;
+            const res = await fetchAPI("/api/airline/tickets" + (st ? "?status=" + st : ""));
+            if (res && res.tickets) {
+                TICKETS = res.tickets;
+            }
+            const q = $("#q").value.toLowerCase();
+            const filtered = TICKETS.filter(t => {
+                const matchesStatus = !st || t.status === st;
+                const matchesQuery = !q || Object.values(t).join(" ").toLowerCase().includes(q);
+                return matchesStatus && matchesQuery;
+            });
+            renderRows(filtered);
+            updateStats();
+        }
+
+        async function authorizeRefund(pnr) {
+            const t = TICKETS.find(x => x.pnr === pnr);
+            if (!t) return;
+            t.status = "REFUNDED";
+            await fetchAPI("/api/airline/tickets", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(t)
+            });
+            alert(`Refund authorized for PNR ${pnr}. Case status updated to REFUNDED.`);
+            loadTickets();
+        }
+
+        // Issue Ticket
+        $("#btnIssueTicket").onclick = async () => {
+            const rawDep = $("#inp_dep").value.replace("T", " ");
+            const ticket = {
+                passenger: $("#inp_pax").value,
+                pnr: $("#inp_pnr").value.toUpperCase(),
+                bookingRef: $("#inp_bref").value.toUpperCase(),
+                flightNo: $("#inp_flight").value.toUpperCase(),
+                origin: $("#inp_orig").value.toUpperCase(),
+                destination: $("#inp_dest").value.toUpperCase(),
+                departure: rawDep,
+                fare: Number($("#inp_fare").value) || 5000,
+                seat: $("#inp_seat").value,
+                baggageKg: 15,
+                status: $("#inp_st").value,
+                paymentRef: $("#inp_pref").value.toUpperCase(),
+                currency: "INR"
+            };
+
+            await fetchAPI("/api/airline/tickets", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(ticket)
+            });
+
+            TICKETS.push(ticket);
+            alert(`Ticket ${ticket.pnr} issued successfully!`);
+            document.querySelector("nav button[data-t='tickets']").click();
+            loadTickets();
+        };
+
+        // Click row for detail
+        $("#tb").onclick = async e => {
+            const tr = e.target.closest("tr");
+            if (!tr || !tr.dataset.pnr) return;
+            const pnr = tr.dataset.pnr;
+            let data = await fetchAPI("/api/airline/tickets/" + pnr);
+            if (!data) {
+                const t = TICKETS.find(x => x.pnr === pnr);
+                if (t) {
+                    const base = Math.round(t.fare * 0.82);
+                    data = { ...t, fareBreakdown: { base: base, taxes: t.fare - base, total: t.fare } };
+                }
+            }
+            if (data) {
+                const f = [
+                    ["PNR", data.pnr],
+                    ["Passenger", data.passenger],
+                    ["Booking Ref", data.bookingRef],
+                    ["Flight No", data.flightNo],
+                    ["Route", (data.origin || "") + " → " + (data.destination || "")],
+                    ["Departure", data.departure],
+                    ["Seat", data.seat || "Unassigned"],
+                    ["Base Fare", "₹" + (data.fareBreakdown ? data.fareBreakdown.base : "")],
+                    ["Taxes & Fees", "₹" + (data.fareBreakdown ? data.fareBreakdown.taxes : "")],
+                    ["Total Fare", "₹" + data.fare],
+                    ["Payment Ref", data.paymentRef],
+                    ["Status", data.status]
+                ];
+                $("#dg").innerHTML = f.map(x => `<div><span>${x[0]}</span>${x[1]}</div>`).join("");
+                $("#detail").classList.remove("hide");
+                $("#detail").scrollIntoView({ behavior: "smooth" });
+            }
+        };
+
+        function updateStats() {
+            const c = s => TICKETS.filter(t => t.status === s).length;
+            const rev = TICKETS.reduce((acc, t) => acc + (t.fare || 0), 0);
+            $("#stats").innerHTML = [
+                ["Total Tickets", TICKETS.length],
+                ["Confirmed", c("CONFIRMED") + c("CHECKED_IN")],
+                ["Refunded / Cancelled", c("REFUNDED") + c("CANCELLED")],
+                ["Total Value", "₹" + rev.toLocaleString("en-IN")]
+            ].map(x => `<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+        }
+
+        // Navigation
+        document.querySelectorAll("nav button").forEach(b => {
+            b.onclick = () => {
+                document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+                ["tickets", "issue", "console", "docs"].forEach(id => $("#" + id).classList.toggle("hide", id !== b.dataset.t));
+            };
+        });
+
+        // Search and filters
+        $("#ref").onclick = loadTickets;
+        $("#st").onchange = loadTickets;
+        $("#q").oninput = loadTickets;
+
+        // API Console
+        $("#send").onclick = async () => {
+            const a = $("#arg").value.trim();
+            const path = $("#ep").value === "list" ? "/api/airline/tickets" + (a ? "?status=" + encodeURIComponent(a.toUpperCase()) : "") : "/api/airline/tickets/" + encodeURIComponent(a || "MR1001");
+            $("#req").textContent = "GET " + path;
+            const r = await fetchAPI(path);
+            $("#out").textContent = JSON.stringify(r || { error: "Service offline" }, null, 2);
+        };
+
+        loadTickets();
+    </script>
+</body>
+</html>
